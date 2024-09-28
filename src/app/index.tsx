@@ -1,23 +1,53 @@
+// uma forma interessante de organizar as importações é separar as bibliotecas dos componentes criados deixando as do react/react native primeiro
 import { useState } from "react"
 import { Input } from "@/components/Input"
-import { Image, Text, View } from "react-native"
-import { colors } from "@/styles/colors"
-import { Button } from "@/components/Button"
+import { Image, Keyboard, Text, View } from "react-native"
 import { MapPin, Calendar as IconCalendar, Settings2, UserRoundPlus, ArrowRight } from "lucide-react-native"
+import { DateData } from "react-native-calendars"
 
+import { calendarUtils, DatesSelected } from "@/utils/calendarUtils"
+import { colors } from "@/styles/colors"
+
+import { Button } from "@/components/Button"
+import { Modal } from "@/components/Modal/modal"
+import { Calendar } from "@/components/Calendar/calendar"
+import dayjs from "dayjs"
+
+// Cria meio que uma tipagem enumerada, muito útil para usar com estados que possuem estágios para exibir um componente (por exemplo um preenchimento de formulário)
 enum StepForm {
   TRIP_DETAILS = 1,
   ADD_EMAIL = 2,
 }
 
+enum MODAL {
+  NONE = 0,
+  CALENDAR = 1,
+  GUESTS = 2,
+}
+
 export default function Index() {
+  // DATA
   const [stepForm, setStepForm] = useState(StepForm.TRIP_DETAILS)
+  const [selectedDates, setSelectedDates] = useState({} as DatesSelected)
+
+  // MODAL
+  const [showModal, setShowModal] = useState(MODAL.NONE)
 
   // quando a função for chamada/disparada a partir de uma interação do usuário, utiliza-se o handle
   function handleNextStepForm() {
     if (stepForm === StepForm.TRIP_DETAILS) {
       return setStepForm(StepForm.ADD_EMAIL)
     }
+  }
+
+  function handleSeletecDate(selectedDay: DateData) {
+    const dates = calendarUtils.orderStartsAtAndEndsAt({
+      startsAt: selectedDates.startsAt,
+      endsAt: selectedDates.endsAt,
+      selectedDay,
+    })
+
+    setSelectedDates(dates)
   }
 
   return (
@@ -35,7 +65,14 @@ export default function Index() {
         </Input>
         <Input>
           <IconCalendar color={colors.zinc[400]} size={20} />
-          <Input.Field placeholder="Quando?" editable={stepForm === StepForm.TRIP_DETAILS} />
+          <Input.Field
+            placeholder="Quando?"
+            editable={stepForm === StepForm.TRIP_DETAILS}
+            onFocus={() => Keyboard.dismiss()} // rejeita a abertura do teclado quando o input for pressionado
+            showSoftInputOnFocus={false} // faz com que a animação do teclado subindo não apareça quando o input for pressionado
+            onPressIn={() => stepForm === StepForm.TRIP_DETAILS && setShowModal(MODAL.CALENDAR)}
+            value={selectedDates.formatDatesInText}
+          />
         </Input>
 
         {stepForm === StepForm.ADD_EMAIL && (
@@ -49,10 +86,14 @@ export default function Index() {
           </>
         )}
 
-        <Input>
-          <UserRoundPlus color={colors.zinc[400]} size={20} />
-          <Input.Field placeholder="Quem estará na viagem?" />
-        </Input>
+        {stepForm === StepForm.ADD_EMAIL && (
+          <>
+            <Input>
+              <UserRoundPlus color={colors.zinc[400]} size={20} />
+              <Input.Field placeholder="Quem estará na viagem?" />
+            </Input>
+          </>
+        )}
 
         <Button onPress={handleNextStepForm}>
           <Button.Title>{stepForm === StepForm.TRIP_DETAILS ? "Continuar" : "Confirmar Viagem"}</Button.Title>
@@ -64,6 +105,23 @@ export default function Index() {
         Ao planejar sua viagem pela Plann.er você automaticamente concorda com nossos{" "}
         <Text className="text-zinc-300 underline">termos de uso e políticas de privacidade.</Text>
       </Text>
+
+      <Modal
+        title="Selecionar datas"
+        subtitle="Selecione a data de ida e volta da viagem"
+        visible={showModal === MODAL.CALENDAR}
+        onClose={() => {
+          setShowModal(MODAL.NONE)
+        }}
+      >
+        <View className="mt-4 gap-4">
+          <Calendar minDate={dayjs().toISOString()} onDayPress={handleSeletecDate} markedDates={selectedDates.dates} />
+
+          <Button onPress={() => setShowModal(MODAL.NONE)}>
+            <Button.Title>Confirmar</Button.Title>
+          </Button>
+        </View>
+      </Modal>
     </View>
   )
 }
