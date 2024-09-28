@@ -1,4 +1,6 @@
 import "@/styles/global.css"
+import "@/utils/dayjsLocaleConfig" // transforma a data do js para o formato pt-br
+
 import { Slot } from "expo-router"
 import { StatusBar, View } from "react-native"
 import { useFonts, Inter_400Regular, Inter_500Medium, Inter_600SemiBold } from "@expo-google-fonts/inter"
