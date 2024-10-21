@@ -12,13 +12,17 @@ type ButtonProps = TouchableOpacityProps & {
 
 const ThemeContext = createContext<{ variant?: Variants }>({})
 
-function Button({ variant = "primary", children, isLoading, ...rest }: ButtonProps) {
+function Button({ variant = "primary", children, isLoading, className, ...rest }: ButtonProps) {
   return (
     <TouchableOpacity
-      className={clsx("h-11 w-full flex-row items-center justify-center gap-2 rounded-lg", {
-        "bg-lime-300": variant === "primary",
-        "bg-zinc-800": variant === "secondary",
-      })}
+      className={clsx(
+        "h-11 flex-row items-center justify-center gap-2 rounded-lg",
+        {
+          "bg-lime-300": variant === "primary",
+          "bg-zinc-800": variant === "secondary",
+        },
+        className
+      )}
       activeOpacity={0.7}
       disabled={isLoading}
       {...rest}
