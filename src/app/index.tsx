@@ -73,7 +73,7 @@ export default function Index() {
     ])
   }
 
-  function handleSeletecDate(selectedDay: DateData) {
+  function handleSelectDate(selectedDay: DateData) {
     const dates = calendarUtils.orderStartsAtAndEndsAt({
       startsAt: selectedDates.startsAt,
       endsAt: selectedDates.endsAt,
@@ -231,7 +231,7 @@ export default function Index() {
         }}
       >
         <View className="mt-4 gap-4">
-          <Calendar minDate={dayjs().toISOString()} onDayPress={handleSeletecDate} markedDates={selectedDates.dates} />
+          <Calendar minDate={dayjs().toISOString()} onDayPress={handleSelectDate} markedDates={selectedDates.dates} />
 
           <Button onPress={() => setShowModal(MODAL.NONE)}>
             <Button.Title>Confirmar</Button.Title>
