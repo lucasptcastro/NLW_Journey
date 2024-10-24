@@ -16,7 +16,7 @@ function Button({ variant = "primary", children, isLoading, className, ...rest }
   return (
     <TouchableOpacity
       className={clsx(
-        "h-11 flex-row items-center justify-center gap-2 rounded-lg",
+        "h-11 flex-row items-center justify-center gap-2 rounded-lg px-2",
         {
           "bg-lime-300": variant === "primary",
           "bg-zinc-800": variant === "secondary",
