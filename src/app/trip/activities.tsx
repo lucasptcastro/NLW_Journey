@@ -4,8 +4,10 @@ import { PlusIcon, Tag, Calendar as IconCalendar, Clock } from "lucide-react-nat
 
 import { Input } from "@/components/Input"
 import { Button } from "@/components/Button"
+import { Loading } from "@/components/Loading"
 import { Modal } from "@/components/Modal/modal"
 import { Calendar } from "@/components/Calendar/calendar"
+import { Activity, ActivityProps } from "@/components/Activity/activity"
 
 import { TripData } from "./[id]"
 
@@ -13,7 +15,6 @@ import { colors } from "@/styles/colors"
 import { activitiesServer } from "@/server/activities-server"
 
 import dayjs from "dayjs"
-import { Activity, ActivityProps } from "@/components/Activity/activity"
 
 type Props = {
   tripDetails: TripData
@@ -125,23 +126,27 @@ export function Activities({ tripDetails }: Props) {
         </Button>
       </View>
 
-      <SectionList
-        sections={tripActivities}
-        keyExtractor={item => item.id}
-        renderItem={({ item }) => <Activity data={item} />}
-        renderSectionHeader={({ section }) => (
-          <View className="w-full">
-            <Text className="py-2 font-semibold text-2xl text-zinc-50">
-              Dia {section.title.dayNumber + " "}
-              <Text className="font-regular text-base capitalize text-zinc-500">{section.title.dayName} </Text>
-            </Text>
+      {isLoadingActivities ? (
+        <Loading />
+      ) : (
+        <SectionList // componente que carrega listas, parecido com o flatlist, porém junto de seções. MUITO INTERESSANTE
+          sections={tripActivities}
+          keyExtractor={item => item.id}
+          renderItem={({ item }) => <Activity data={item} />}
+          renderSectionHeader={({ section }) => (
+            <View className="w-full">
+              <Text className="py-2 font-semibold text-2xl text-zinc-50">
+                Dia {section.title.dayNumber + " "}
+                <Text className="font-regular text-base capitalize text-zinc-500">{section.title.dayName} </Text>
+              </Text>
 
-            {section.data.length === 0 && <Text className="mb-8 font-regular text-sm text-zinc-500">Nenhuma atividade cadastrada nessa data.</Text>}
-          </View>
-        )}
-        contentContainerClassName="gap-3 pb-48"
-        showsVerticalScrollIndicator={false}
-      />
+              {section.data.length === 0 && <Text className="mb-8 font-regular text-sm text-zinc-500">Nenhuma atividade cadastrada nessa data.</Text>}
+            </View>
+          )}
+          contentContainerClassName="gap-3 pb-48"
+          showsVerticalScrollIndicator={false}
+        />
+      )}
 
       <Modal
         visible={showModal === MODAL.NEW_ACTIVITY}
