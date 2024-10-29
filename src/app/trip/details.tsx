@@ -1,15 +1,18 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Plus } from "lucide-react-native"
-import { Alert, Text, View } from "react-native"
+import { Alert, FlatList, Text, View } from "react-native"
 
 import { Button } from "@/components/Button"
 import { Input } from "@/components/Input"
 import { Modal } from "@/components/Modal/modal"
+import { Participant, ParticipantProps } from "@/components/Participant/participant"
+import { TripLink, TripLinkProps } from "@/components/TripLink/tripLink"
 
 import { linksServer } from "@/server/links-server"
 
 import { validateInput } from "@/utils/validateInput"
 import { colors } from "@/styles/colors"
+import { participantsServer } from "@/server/participants-server"
 
 export function Details({ tripId }: { tripId: string }) {
   // MODAL
@@ -17,6 +20,10 @@ export function Details({ tripId }: { tripId: string }) {
 
   // LOADING
   const [isCreatingLinkTrip, setIsCreatingLinkTrip] = useState(false)
+
+  // LISTS
+  const [links, setLinks] = useState<TripLinkProps[]>([])
+  const [participants, setParticipants] = useState<ParticipantProps[]>([])
 
   // DATA
   const [linkTitle, setLinkTitle] = useState("")
@@ -41,6 +48,8 @@ export function Details({ tripId }: { tripId: string }) {
       Alert.alert("Link", "Link criado com sucesso!")
 
       resetNewLinkFields()
+
+      // await getTripLinks()
     } catch (error) {
       console.log(error)
     } finally {
@@ -48,16 +57,58 @@ export function Details({ tripId }: { tripId: string }) {
     }
   }
 
+  async function getTripLinks() {
+    try {
+      const links = await linksServer.getLinksByTripId(tripId)
+      setLinks(links)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  async function getTripParticipants() {
+    try {
+      const participants = await participantsServer.getByTripId(tripId)
+      setParticipants(participants)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(() => {
+    getTripLinks()
+    getTripParticipants()
+  }, [])
+
   return (
     <View className="mt-10 flex-1">
       <Text className="mb-2 font-semibold text-2xl text-zinc-50">Links importantes</Text>
 
       <View className="flex-1">
+        <FlatList
+          data={links}
+          keyExtractor={item => item.id}
+          renderItem={({ item }) => <TripLink data={item} />}
+          contentContainerClassName="gap-4"
+          ListEmptyComponent={<Text className="mb-6 mt-2 font-regular text-base text-zinc-400">Nenhum link adicionado.</Text>}
+        />
+
         <Button variant="secondary" onPress={() => setShowNewLinkModal(true)}>
           <Plus color={colors.zinc[200]} size={20} />
 
           <Button.Title>Cadastrar novo link</Button.Title>
         </Button>
+      </View>
+
+      <View className="mt-6 flex-1 border-t border-zinc-800">
+        <Text className="my-6 font-semibold text-2xl text-zinc-50">Convidados</Text>
+
+        <FlatList
+          data={participants}
+          keyExtractor={item => item.id}
+          renderItem={({ item }) => <Participant data={item} />}
+          contentContainerClassName="gap-4 pb-44"
+        />
       </View>
 
       <Modal
