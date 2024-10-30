@@ -261,8 +261,6 @@ export default function Index() {
               keyboardType="email-address"
               onChangeText={text => setEmailToInvite(text.toLocaleLowerCase().trim())}
               value={emailToInvite}
-              returnKeyType="send"
-              onSubmitEditing={handleAddEmail}
             />
           </Input>
 
