@@ -4,6 +4,7 @@ import { Input } from "@/components/Input"
 import { Alert, Image, Keyboard, Text, View } from "react-native"
 import { MapPin, Calendar as IconCalendar, Settings2, UserRoundPlus, ArrowRight, AtSign } from "lucide-react-native"
 import { DateData } from "react-native-calendars"
+
 import dayjs from "dayjs"
 
 import { colors } from "@/styles/colors"
@@ -12,9 +13,9 @@ import { validateInput } from "@/utils/validateInput"
 import { calendarUtils, DatesSelected } from "@/utils/calendarUtils"
 
 import { Button } from "@/components/Button"
-import { Modal } from "@/components/Modal/modal"
-import { Calendar } from "@/components/Calendar/calendar"
-import { GuestEmail } from "@/components/Email/email"
+import { Modal } from "@/components/Modal"
+import { Calendar } from "@/components/Calendar"
+import { GuestEmail } from "@/components/Email"
 
 import { router } from "expo-router"
 import { tripServer } from "@/server/trip-server"
@@ -105,7 +106,7 @@ export default function Index() {
 
   async function saveTrip(tripId: string) {
     try {
-      await tripStorage.save("65128303-fa0a-4ae8-9bc5-6daf6f52f63a") //TODO: adicionar trip dinâmico (resolver erro que tá dando no back)
+      await tripStorage.save(tripId) //TODO: adicionar trip dinâmico (resolver erro que tá dando no back)
       router.navigate(`./trip/${tripId}`)
     } catch (error) {
       Alert.alert("Salvar viagem", "Não foi possível salvar o id da viagem no dispositivo")
