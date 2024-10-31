@@ -1,8 +1,4 @@
-import {
-  Calendar as RNCalendar,
-  CalendarProps,
-  LocaleConfig,
-} from "react-native-calendars"
+import { Calendar as RNCalendar, CalendarProps, LocaleConfig } from "react-native-calendars"
 import { ptBR } from "@/utils/localeCalendarConfig"
 
 LocaleConfig.locales["pt-br"] = ptBR
