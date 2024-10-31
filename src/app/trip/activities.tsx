@@ -5,8 +5,8 @@ import { PlusIcon, Tag, Calendar as IconCalendar, Clock } from "lucide-react-nat
 import { Input } from "@/components/Input"
 import { Button } from "@/components/Button"
 import { Loading } from "@/components/Loading"
-import { Modal } from "@/components/Modal/modal"
-import { Calendar } from "@/components/Calendar/calendar"
+import { Modal } from "@/components/Modal"
+import { Calendar } from "@/components/Calendar"
 import { Activity, ActivityProps } from "@/components/Activity/activity"
 
 import { TripData } from "./[id]"

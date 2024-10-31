@@ -15,8 +15,8 @@ import { colors } from "@/styles/colors"
 import { Input } from "@/components/Input"
 import { Button } from "@/components/Button"
 import { Loading } from "@/components/Loading"
-import { Modal } from "@/components/Modal/modal"
-import { Calendar } from "@/components/Calendar/calendar"
+import { Modal } from "@/components/Modal"
+import { Calendar } from "@/components/Calendar"
 
 import { calendarUtils, DatesSelected } from "@/utils/calendarUtils"
 

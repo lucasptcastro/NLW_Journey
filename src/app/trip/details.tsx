@@ -4,7 +4,7 @@ import { Alert, FlatList, Text, View } from "react-native"
 
 import { Button } from "@/components/Button"
 import { Input } from "@/components/Input"
-import { Modal } from "@/components/Modal/modal"
+import { Modal } from "@/components/Modal"
 import { Participant, ParticipantProps } from "@/components/Participant/participant"
 import { TripLink, TripLinkProps } from "@/components/TripLink/tripLink"
 
@@ -49,7 +49,7 @@ export function Details({ tripId }: { tripId: string }) {
 
       resetNewLinkFields()
 
-      // await getTripLinks()
+      await getTripLinks()
     } catch (error) {
       console.log(error)
     } finally {
