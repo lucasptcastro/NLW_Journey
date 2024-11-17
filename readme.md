@@ -5,3 +5,5 @@ react-native-calendars -> funcionalidade de calendário (muitas opções de esti
 expo-blur -> efeito "embaçado" (muito interessante)
 
 dayjs -> trabalha com datas no javascript (bom para pegar a data atual)
+
+react-native-gesture-handler e react-native-reanimated -> utilizei para criar a animação de swipe (deslizar) para remover um componente
