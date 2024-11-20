@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react"
-import { Alert, Dimensions, Text, View } from "react-native"
+import { Alert, Dimensions, Pressable, Text, View } from "react-native"
 import { CircleDashed, CircleCheck, Trash } from "lucide-react-native"
 import { router } from "expo-router"
 
 import clsx from "clsx"
+import * as Haptics from "expo-haptics"
 
 import { activitiesServer } from "@/server/activities-server"
 import { tripStorage } from "@/storage/trip"
@@ -17,6 +18,7 @@ export type ActivityProps = {
   title: string
   hour: string
   isBefore: boolean
+  done: boolean
 }
 
 type Props = {
@@ -31,26 +33,6 @@ export function Activity({ data }: Props) {
 
   const { width: SCREEN_WIDTH } = Dimensions.get("window")
   const TRANSLATE_X_TRESHOLD = -SCREEN_WIDTH * 0.3
-
-  async function removeActivity() {
-    try {
-      Alert.alert("Remover atividade", "Tem certeza que deseja remover a atividade?", [
-        {
-          text: "Não",
-          style: "cancel",
-        },
-        {
-          text: "Sim",
-          onPress: async () => {
-            await activitiesServer.remove(trip!, data.id)
-            return router.back()
-          },
-        },
-      ])
-    } catch (error) {
-      console.log("Ocorreu um erro ao tentar deletar a atividade! Erro:" + error)
-    }
-  }
 
   // Faz a animação de swipe (deslizar) para o lado
   const panGesture = useAnimatedGestureHandler<PanGestureHandlerGestureEvent>({
@@ -99,33 +81,78 @@ export function Activity({ data }: Props) {
     setTrip(trip)
   }
 
+  async function removeActivity() {
+    try {
+      Alert.alert("Remover atividade", "Tem certeza que deseja remover a atividade?", [
+        {
+          text: "Não",
+          style: "cancel",
+        },
+        {
+          text: "Sim",
+          onPress: async () => {
+            await activitiesServer.remove(trip!, data.id)
+            return router.back()
+          },
+        },
+      ])
+    } catch (error) {
+      console.log("Ocorreu um erro ao tentar deletar a atividade! Erro:" + error)
+    }
+  }
+
+  async function handleCheckActivity() {
+    try {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
+      await activitiesServer.check(trip!, data.id)
+      return router.back()
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   useEffect(() => {
     getTripData()
   }, [])
+
+  console.log(data)
 
   return (
     <GestureHandlerRootView>
       <View
         className={clsx("absolute z-0 h-full w-full items-end justify-center rounded-lg bg-red-500 pr-10", {
-          hidden: data.isBefore,
+          hidden: data.isBefore || data.done,
         })}
       >
         <Trash color={"white"} size={20} />
       </View>
       <PanGestureHandler onGestureEvent={panGesture}>
         <Animated.View style={style}>
-          <View
+          <Pressable
             className={clsx("z-10 w-full flex-row items-center gap-3 rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-3", {
-              "opacity-50": data.isBefore,
+              "opacity-50": data.isBefore || data.done,
             })}
+            onPress={handleCheckActivity}
           >
             {/* se a data da atividade for antes da data atual mostra um ícone concluído. Senão, mostra um ícone pendente */}
-            {data.isBefore ? <CircleCheck color={colors.lime[300]} size={20} /> : <CircleDashed color={colors.zinc[400]} size={20} />}
+            {data.isBefore ? (
+              <CircleCheck color={colors.lime[300]} size={20} />
+            ) : data.done ? (
+              <CircleCheck color={colors.lime[300]} size={20} />
+            ) : (
+              <CircleDashed color={colors.zinc[400]} size={20} />
+            )}
 
-            <Text className="flex-1 font-regular text-base text-zinc-100">{data.title}</Text>
+            <Text
+              className={clsx("flex-1 font-regular text-base text-zinc-100", {
+                "line-through": data.isBefore || data.done,
+              })}
+            >
+              {data.title}
+            </Text>
 
             <Text className="font-regular text-sm text-zinc-400">{data.hour}</Text>
-          </View>
+          </Pressable>
         </Animated.View>
       </PanGestureHandler>
     </GestureHandlerRootView>
