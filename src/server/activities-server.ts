@@ -4,6 +4,7 @@ type Activity = {
   id: string
   occurs_at: string
   title: string
+  done: boolean
 }
 
 type ActivityCreate = Omit<Activity, "id"> & {
@@ -45,4 +46,13 @@ async function remove(tripId: string, activityId: string) {
   }
 }
 
-export const activitiesServer = { create, getActivitiesByTripId, remove }
+async function check(tripId: string, activityId: string) {
+  try {
+    const { data } = await api.put(`/trips/${tripId}/activities/${activityId}/check`)
+    return data
+  } catch (error) {
+    throw error
+  }
+}
+
+export const activitiesServer = { create, getActivitiesByTripId, remove, check }
