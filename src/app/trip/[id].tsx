@@ -20,8 +20,8 @@ import { Calendar } from "@/components/Calendar"
 
 import { calendarUtils, DatesSelected } from "@/utils/calendarUtils"
 
-import { Activities } from "./activities"
-import { Details } from "./details"
+import Activities from "./activities"
+import Details from "./details"
 
 export type TripData = TripDetails & { when: string }
 
