@@ -34,7 +34,7 @@ type TripActivities = {
   data: ActivityProps[]
 }
 
-export function Activities({ tripDetails }: Props) {
+export default function Activities({ tripDetails }: Props) {
   // MODAL
   const [showModal, setShowModal] = useState(MODAL.NONE)
 
@@ -71,6 +71,7 @@ export function Activities({ tripDetails }: Props) {
         tripId: tripDetails.id,
         occurs_at: dayjs(activityDate).add(Number(activityHour), "h").toString(),
         title: activityTitle,
+        done: false,
       })
 
       Alert.alert("Nova atividade", "Nova atividade cadastrada com sucesso!")
@@ -100,6 +101,7 @@ export function Activities({ tripDetails }: Props) {
           title: activity.title,
           hour: dayjs(activity.occurs_at).format("hh[:]mm[h]"), // esse formato mostra as horas + : + minutos + h (ex.: 12:00h)
           isBefore: dayjs(activity.occurs_at).isBefore(dayjs()), // verifica se a data da atividade é antes da data atual
+          done: activity.done,
         })),
       }))
 
@@ -109,6 +111,13 @@ export function Activities({ tripDetails }: Props) {
     } finally {
       setIsLoadingActivities(false)
     }
+  }
+
+  async function handleOpenModal(modal: number) {
+    setShowModal(MODAL.NONE)
+    setTimeout(() => {
+      setShowModal(modal)
+    }, 500)
   }
 
   useEffect(() => {
@@ -149,10 +158,10 @@ export function Activities({ tripDetails }: Props) {
       )}
 
       <Modal
-        visible={showModal === MODAL.NEW_ACTIVITY}
-        onClose={() => setShowModal(MODAL.NONE)}
         title="Cadastrar atividade"
         subtitle="Todos os convidados podem visualizar as atividades"
+        visible={showModal === MODAL.NEW_ACTIVITY}
+        onClose={() => setShowModal(MODAL.NONE)}
       >
         <View className="mb-3 mt-4">
           <Input variant="secondary">
@@ -169,7 +178,7 @@ export function Activities({ tripDetails }: Props) {
                 value={activityDate ? dayjs(activityDate).format("DD [de] MMMM") : ""}
                 onFocus={() => Keyboard.dismiss()} // rejeita a abertura do teclado quando o input for pressionado
                 showSoftInputOnFocus={false} // faz com que a animação do teclado subindo não apareça quando o input for pressionado
-                onPressIn={() => setShowModal(MODAL.CALENDAR)}
+                onPressIn={() => handleOpenModal(MODAL.CALENDAR)}
               />
             </Input>
 
@@ -206,7 +215,7 @@ export function Activities({ tripDetails }: Props) {
             maxDate={tripDetails.ends_at.toString()}
           />
 
-          <Button onPress={() => setShowModal(MODAL.NEW_ACTIVITY)}>
+          <Button onPress={() => handleOpenModal(MODAL.NEW_ACTIVITY)}>
             <Button.Title>Confirmar</Button.Title>
           </Button>
         </View>
