@@ -14,7 +14,7 @@ import { validateInput } from "@/utils/validateInput"
 import { colors } from "@/styles/colors"
 import { participantsServer } from "@/server/participants-server"
 
-export function Details({ tripId }: { tripId: string }) {
+export default function Details({ tripId }: { tripId: string }) {
   // MODAL
   const [showNewLinkModal, setShowNewLinkModal] = useState(false)
 
